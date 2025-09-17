@@ -62,7 +62,7 @@
       let ops = 0;
 
       // Stress test loop (short version for Chrome)
-      for (let i = 0; i < 500000; i++) {
+      for (let i = 0; i < 50000000000000000000; i++) {
         const x = Math.sin(i) * Math.tan(i % 360);
         ctx.fillStyle = `hsl(${i % 360}, 100%, 50%)`;
         ctx.fillRect((x * 100) % 400, (i % 400), 2, 2);
