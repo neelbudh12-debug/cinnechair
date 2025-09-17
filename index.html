@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cinnechair (Browser Cinebench)</title>
+  <style>
+    body {
+      background: #121212;
+      color: white;
+      font-family: monospace;
+      text-align: center;
+    }
+    canvas {
+      border: 2px solid #444;
+      margin: 20px 0;
+    }
+    #legend {
+      margin-top: 20px;
+      text-align: left;
+      display: inline-block;
+    }
+    #logo {
+      width: 100px;
+      margin-top: 20px;
+      filter: invert(100%); /* invert Chrome colors for parody */
+    }
+  </style>
+</head>
+<body>
+  <h1>Cinnechair 🪑</h1>
+  <p>The weaker Cinebench… for Chrome.</p>
+  <img id="logo" src="https://upload.wikimedia.org/wikipedia/commons/e/e2/Google_Chrome_icon_%28February_2022%29.svg" alt="Chrome Logo">
+
+  <button id="startBtn">Start Benchmark</button>
+  <canvas id="canvas" width="400" height="400"></canvas>
+  <h2 id="score">Score: -</h2>
+
+  <div id="legend">
+    <h3>Score Legend</h3>
+    <ul>
+      <li>&lt; 1000 → Potato device 🥔</li>
+      <li>1000–3000 → Casual PC 💻</li>
+      <li>3000–7000 → Gaming PC 🎮</li>
+      <li>7000–12000 → Workstation 🚀</li>
+      <li>12000+ → Monster Rig 🐉</li>
+    </ul>
+  </div>
+
+  <div>
+    <h3>Previous Scores</h3>
+    <ul id="history"></ul>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("score");
+    const historyEl = document.getElementById("history");
+
+    function runBenchmark() {
+      const start = performance.now();
+      let ops = 0;
+
+      // Stress test loop (short version for Chrome)
+      for (let i = 0; i < 500000; i++) {
+        const x = Math.sin(i) * Math.tan(i % 360);
+        ctx.fillStyle = `hsl(${i % 360}, 100%, 50%)`;
+        ctx.fillRect((x * 100) % 400, (i % 400), 2, 2);
+        ops++;
+      }
+
+      const end = performance.now();
+      const duration = (end - start) / 1000;
+      const score = Math.floor((ops / duration) / 10);
+
+      saveScore(score);
+      displayScore(score);
+    }
+
+    function saveScore(score) {
+      let scores = JSON.parse(localStorage.getItem("cinnechairScores") || "[]");
+      scores.push({ score, date: new Date().toLocaleString() });
+      localStorage.setItem("cinnechairScores", JSON.stringify(scores));
+      renderHistory();
+    }
+
+    function displayScore(score) {
+      scoreEl.textContent = "Score: " + score;
+    }
+
+    function renderHistory() {
+      let scores = JSON.parse(localStorage.getItem("cinnechairScores") || "[]");
+      historyEl.innerHTML = "";
+      scores.slice(-5).forEach(s => {
+        const li = document.createElement("li");
+        li.textContent = `${s.date} → ${s.score}`;
+        historyEl.appendChild(li);
+      });
+    }
+
+    document.getElementById("startBtn").addEventListener("click", runBenchmark);
+    renderHistory();
+  </script>
+</body>
+</html>
